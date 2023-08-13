@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -26,7 +27,7 @@ import benicio.soluces.blocodemetas.utils.ObjetivosUtils;
 import benicio.soluces.blocodemetas.utils.RecyclerItemClickListener;
 
 public class MainActivity extends AppCompatActivity {
-    private Dialog dialog_save;
+    private Dialog dialog_save, dialog_edt_or_concluir, dialog_editar;
     private ActivityMainBinding vb;
     private RecyclerView recyclerView;
     private AdapterObjetivos adapter;
@@ -38,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
         vb = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(vb.getRoot());
 
-        getSupportActionBar().setTitle("Objetivos");
+        getSupportActionBar().setTitle("Esboços");
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
 
 
@@ -70,12 +71,50 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onLongItemClick(View view, int position) {
                 ObjetivoModel objetivoAtualizado = lista.get(position);
-                lista.remove(position);
-                objetivoAtualizado.setConcluido(true);
-                lista.add(objetivoAtualizado);
-                adapter.notifyDataSetChanged();
-                Toast.makeText(MainActivity.this, objetivoAtualizado.getTitulo() + " concluído!", Toast.LENGTH_SHORT).show();
-                salvarObjetivos();
+
+                AlertDialog.Builder b = new AlertDialog.Builder(MainActivity.this);
+                b.setMessage("Escolha entre as opções.");
+
+                b.setPositiveButton("Concluir", (dialogInterface, i) -> {
+                    lista.remove(position);
+                    objetivoAtualizado.setConcluido(true);
+                    lista.add(objetivoAtualizado);
+                    adapter.notifyDataSetChanged();
+                    Toast.makeText(MainActivity.this, objetivoAtualizado.getTitulo() + " concluído!", Toast.LENGTH_SHORT).show();
+                    salvarObjetivos();
+                    dialog_edt_or_concluir.dismiss();
+                });
+
+                b.setNegativeButton("Editar", (dialogInterface, i) -> {
+                dialog_edt_or_concluir.dismiss();
+                AlertDialog.Builder bEditar = new AlertDialog.Builder(MainActivity.this);
+                SaveLayoutBinding saveLayoutBinding = SaveLayoutBinding.inflate(getLayoutInflater());
+                saveLayoutBinding.tituloEdt.setText(objetivoAtualizado.getTitulo());
+                saveLayoutBinding.salvarBtn.setOnClickListener( edtView -> {
+                    String novoTitulo = saveLayoutBinding.tituloEdt.getText().toString();
+                    objetivoAtualizado.setTitulo(novoTitulo);
+                    lista.remove(position);
+                    lista.add(objetivoAtualizado);
+                    adapter.notifyDataSetChanged();
+                    Toast.makeText(MainActivity.this,  "Atualizado!", Toast.LENGTH_SHORT).show();
+                    salvarObjetivos();
+                    dialog_editar.dismiss();
+                });
+                bEditar.setView(saveLayoutBinding.getRoot());
+                dialog_editar = bEditar.show();
+                });
+
+                b.setNeutralButton("Excluir", (dialogInterface, i) -> {
+                    lista.remove(position);
+                    adapter.notifyDataSetChanged();
+                    Toast.makeText(MainActivity.this,  "Excluido!", Toast.LENGTH_SHORT).show();
+                    salvarObjetivos();
+                    dialog_edt_or_concluir.dismiss();
+                });
+
+                dialog_edt_or_concluir = b.create();
+                dialog_edt_or_concluir.show();
+
             }
 
             @Override

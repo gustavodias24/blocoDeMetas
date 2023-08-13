@@ -50,7 +50,8 @@ public class SubMetasActivity extends AppCompatActivity {
 
         idMeta = dadosObjetivo.getStringExtra("idMeta");
 
-        getSupportActionBar().setTitle("Submetas do " + dadosObjetivo.getStringExtra("metaNome"));
+//        getSupportActionBar().setTitle("Submetas do " + dadosObjetivo.getStringExtra("metaNome"));
+        getSupportActionBar().setTitle(dadosObjetivo.getStringExtra("metaNome"));
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);

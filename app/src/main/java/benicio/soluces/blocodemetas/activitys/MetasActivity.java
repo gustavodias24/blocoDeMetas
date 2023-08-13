@@ -48,7 +48,8 @@ public class MetasActivity extends AppCompatActivity {
 
         idObjetivo = dadosObjetivo.getStringExtra("idObjetivo");
 
-        getSupportActionBar().setTitle("Metas do " + dadosObjetivo.getStringExtra("objetivoNome"));
+//        getSupportActionBar().setTitle("Metas do " + dadosObjetivo.getStringExtra("objetivoNome"));
+        getSupportActionBar().setTitle(dadosObjetivo.getStringExtra("objetivoNome"));
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
