@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -33,7 +34,7 @@ import benicio.soluces.blocodemetas.utils.RecyclerItemClickListener;
 public class MetasActivity extends AppCompatActivity {
 
     private ActivityMetasBinding vb;
-    private Dialog dialog_save, dialog_subMeta;
+    private Dialog dialog_save, dialog_subMeta, dialog_remove_concluir_meta;
     private RecyclerView recyclerView;
     private AdapterMetas adapter;
     private List<MetaModel> lista = new ArrayList<>();
@@ -113,29 +114,53 @@ public class MetasActivity extends AppCompatActivity {
             public void onLongItemClick(View view, int position) {
                 MetaModel metaModel = lista.get(position);
 
-                if (!metaModel.getConcluido()){
-                    Toast.makeText(MetasActivity.this, metaModel.getTitulo() + " concluída!", Toast.LENGTH_SHORT).show();
-                    metaModel.setConcluido(true);
-                }else{
-                    metaModel.setConcluido(false);
-                }
-
-                int atual_pos = 0;
-                for (MetaModel meta : todaAlista){
-                    if ( meta.getTitulo().equals(metaModel.getTitulo())){
-                        if( todaAlista.get(atual_pos).getTitulo().equals(metaModel.getTitulo())){
-                            break;
-                        }
+                AlertDialog.Builder b = new AlertDialog.Builder(MetasActivity.this);
+                b.setMessage("Escola uma opção.");
+                b.setPositiveButton("Concluir", (dialogInterface, i) -> {
+                    if (!metaModel.getConcluido()){
+//                    Toast.makeText(MetasActivity.this, metaModel.getTitulo() + " concluída!", Toast.LENGTH_SHORT).show();
+                        metaModel.setConcluido(true);
+                    }else{
+                        metaModel.setConcluido(false);
                     }
-                    atual_pos++;
-                }
 
-                todaAlista.remove(atual_pos);
-                todaAlista.add(metaModel);
+                    int atual_pos = 0;
+                    for (MetaModel meta : todaAlista){
+                        if ( meta.getTitulo().equals(metaModel.getTitulo())){
+                            if( todaAlista.get(atual_pos).getTitulo().equals(metaModel.getTitulo())){
+                                break;
+                            }
+                        }
+                        atual_pos++;
+                    }
 
+                    todaAlista.remove(atual_pos);
+                    todaAlista.add(metaModel);
+                    salvarMetas();
+                    carregar_metas();
+                    dialog_remove_concluir_meta.dismiss();
+                });
 
-                salvarMetas();
-                carregar_metas();
+                b.setNegativeButton("Excluir", (dialogInterface, i) -> {
+                    Toast.makeText(MetasActivity.this, "Removido!", Toast.LENGTH_SHORT).show();
+                    int atual_pos = 0;
+                    for (MetaModel meta : todaAlista){
+                        if ( meta.getTitulo().equals(metaModel.getTitulo())){
+                            if( todaAlista.get(atual_pos).getTitulo().equals(metaModel.getTitulo())){
+                                break;
+                            }
+                        }
+                        atual_pos++;
+                    }
+                    todaAlista.remove(atual_pos);
+                    salvarMetas();
+                    carregar_metas();
+                    dialog_remove_concluir_meta.dismiss();
+                });
+
+                dialog_remove_concluir_meta = b.create();
+                dialog_remove_concluir_meta.show();
+
 
             }
 
