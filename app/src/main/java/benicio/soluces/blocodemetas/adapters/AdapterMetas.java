@@ -1,6 +1,8 @@
 package benicio.soluces.blocodemetas.adapters;
 
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -14,6 +16,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.widget.CompoundButtonCompat;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -29,7 +32,10 @@ import benicio.soluces.blocodemetas.utils.MetasUtils;
 import benicio.soluces.blocodemetas.utils.RecyclerItemClickListener;
 
 public class AdapterMetas extends RecyclerView.Adapter<AdapterMetas.MyViewHolder>{
-
+    private Dialog d;
+    private AdapterSubMetas adapter;
+    private int position1;
+    private MetaModel metaModel;
     List<MetaModel> lista;
     Context c;
 
@@ -48,7 +54,7 @@ public class AdapterMetas extends RecyclerView.Adapter<AdapterMetas.MyViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull AdapterMetas.MyViewHolder holder, int position) {
-        MetaModel metaModel = lista.get(position);
+        metaModel = lista.get(position);
 
         holder.nome.setText(metaModel.getTitulo());
 
@@ -86,13 +92,15 @@ public class AdapterMetas extends RecyclerView.Adapter<AdapterMetas.MyViewHolder
             holder.nome.setPaintFlags(holder.nome.getPaintFlags() & ~flagsToRemove);
         }
 
+        criarDialog();
+
         if ( metaModel.getLista() != null){
             if ( metaModel.getLista().size() > 0){
                 holder.recyclerSubMetas.setVisibility(View.VISIBLE);
                 holder.recyclerSubMetas.setHasFixedSize(true);
                 holder.recyclerSubMetas.setLayoutManager(new LinearLayoutManager(c));
                 holder.recyclerSubMetas.addItemDecoration(new DividerItemDecoration(c, DividerItemDecoration.VERTICAL));
-                AdapterSubMetas adapter = new AdapterSubMetas(metaModel.getLista(), c);
+                adapter = new AdapterSubMetas(metaModel.getLista(), c);
                 holder.recyclerSubMetas.setAdapter(adapter);
                 holder.recyclerSubMetas.addOnItemTouchListener( new RecyclerItemClickListener(c, holder.recyclerSubMetas, new RecyclerItemClickListener.OnItemClickListener() {
                     @Override
@@ -101,16 +109,10 @@ public class AdapterMetas extends RecyclerView.Adapter<AdapterMetas.MyViewHolder
                     }
 
                     @Override
-                    public void onLongItemClick(View view, int position) {
-                        SubMetaModel subMetaModel = metaModel.getLista().get(position);
+                    public void onLongItemClick(View view, int p) {
+                        position1 = p;
+                        d.show();
 
-                        if (!subMetaModel.getConcluido()){
-                            Toast.makeText(c, subMetaModel.getTitulo() + " concluída!", Toast.LENGTH_SHORT).show();
-                            subMetaModel.setConcluido(true);
-                        }else{
-                            subMetaModel.setConcluido(false);
-                        }
-                        adapter.notifyDataSetChanged();
                     }
 
                     @Override
@@ -121,7 +123,43 @@ public class AdapterMetas extends RecyclerView.Adapter<AdapterMetas.MyViewHolder
             }
         }
     }
+    public void criarDialog(){
+        AlertDialog.Builder b = new AlertDialog.Builder(c);
+        b.setMessage("Escolha uma opção para a SubMeta");
+        b.setPositiveButton("Concluir", (dialogInterface, i) -> {
+            concluirSubMeta();
+        });
 
+
+        b.setNegativeButton("Excluir", (dialogInterface, i) -> {
+            excluirSubMeta();
+        });
+
+        d = b.create();
+
+    }
+
+    public void concluirSubMeta(){
+        SubMetaModel subMetaModel = metaModel.getLista().get(position1);
+
+        if (!subMetaModel.getConcluido()){
+//                                Toast.makeText(c, subMetaModel.getTitulo() + " concluída!", Toast.LENGTH_SHORT).show();
+            subMetaModel.setConcluido(true);
+        }else{
+            subMetaModel.setConcluido(false);
+        }
+        adapter.notifyDataSetChanged();
+        MetasUtils.saveMetas(c, lista);
+        d.dismiss();
+    }
+
+    public void excluirSubMeta(){
+        metaModel.getLista().remove(position1);
+
+        adapter.notifyDataSetChanged();
+        MetasUtils.saveMetas(c, lista);
+        d.dismiss();
+    }
     @Override
     public int getItemCount() {
         return lista.size();

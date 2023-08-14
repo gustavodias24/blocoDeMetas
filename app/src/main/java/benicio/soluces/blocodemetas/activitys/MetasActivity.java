@@ -60,7 +60,7 @@ public class MetasActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         recyclerView.addItemDecoration(new DividerItemDecoration(getApplicationContext(), DividerItemDecoration.VERTICAL));
         recyclerView.setHasFixedSize(true);
-        adapter = new AdapterMetas(lista, getApplicationContext());
+        adapter = new AdapterMetas(lista, MetasActivity.this);
         recyclerView.setAdapter(adapter);
         recyclerView.addOnItemTouchListener( new RecyclerItemClickListener(getApplicationContext(), recyclerView, new RecyclerItemClickListener.OnItemClickListener() {
             @Override
@@ -115,7 +115,7 @@ public class MetasActivity extends AppCompatActivity {
                 MetaModel metaModel = lista.get(position);
 
                 AlertDialog.Builder b = new AlertDialog.Builder(MetasActivity.this);
-                b.setMessage("Escola uma opção.");
+                b.setMessage("Escolha uma opção para a meta.");
                 b.setPositiveButton("Concluir", (dialogInterface, i) -> {
                     if (!metaModel.getConcluido()){
 //                    Toast.makeText(MetasActivity.this, metaModel.getTitulo() + " concluída!", Toast.LENGTH_SHORT).show();
