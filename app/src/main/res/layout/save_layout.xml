@@ -6,14 +6,15 @@
     android:padding="8dp">
 
     <EditText
+        android:padding="16dp"
+        android:hint="Título"
         android:id="@+id/titulo_edt"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
         android:ems="10"
-        android:hint="Título"
-        android:inputType="text"
-        android:padding="16dp" />
+        android:gravity="start|top"
+        android:inputType="textMultiLine" />
+
 
     <Button
         android:id="@+id/salvar_btn"

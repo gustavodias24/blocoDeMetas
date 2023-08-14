@@ -29,7 +29,7 @@ public class AdapterSubMetas extends RecyclerView.Adapter<AdapterSubMetas.MyView
     @NonNull
     @Override
     public AdapterSubMetas.MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.generic_layout, parent, false);
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.submeta_layout, parent, false);
         return new MyViewHolder(v);
     }
 
@@ -57,7 +57,7 @@ public class AdapterSubMetas extends RecyclerView.Adapter<AdapterSubMetas.MyView
         TextView nome;
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
-            nome = itemView.findViewById(R.id.textNome);
+            nome = itemView.findViewById(R.id.textNomeSubMeta);
         }
     }
 }

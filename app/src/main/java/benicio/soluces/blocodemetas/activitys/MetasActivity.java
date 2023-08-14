@@ -26,13 +26,14 @@ import benicio.soluces.blocodemetas.databinding.ActivityMetasBinding;
 import benicio.soluces.blocodemetas.databinding.SaveLayoutBinding;
 import benicio.soluces.blocodemetas.models.MetaModel;
 import benicio.soluces.blocodemetas.models.ObjetivoModel;
+import benicio.soluces.blocodemetas.models.SubMetaModel;
 import benicio.soluces.blocodemetas.utils.MetasUtils;
 import benicio.soluces.blocodemetas.utils.RecyclerItemClickListener;
 
 public class MetasActivity extends AppCompatActivity {
 
     private ActivityMetasBinding vb;
-    private Dialog dialog_save;
+    private Dialog dialog_save, dialog_subMeta;
     private RecyclerView recyclerView;
     private AdapterMetas adapter;
     private List<MetaModel> lista = new ArrayList<>();
@@ -63,11 +64,49 @@ public class MetasActivity extends AppCompatActivity {
         recyclerView.addOnItemTouchListener( new RecyclerItemClickListener(getApplicationContext(), recyclerView, new RecyclerItemClickListener.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
-                MetaModel metaClicada = lista.get(position);
-                Intent i = new Intent(getApplicationContext(), SubMetasActivity.class);
-                i.putExtra("idMeta", metaClicada.getId());
-                i.putExtra("metaNome", metaClicada.getTitulo());
-                startActivity(i);
+                //adicionar subMeta
+                Toast.makeText(MetasActivity.this, "Adicionar submeta", Toast.LENGTH_SHORT).show();
+                AlertDialog.Builder b = new AlertDialog.Builder(MetasActivity.this);
+                b.setTitle("Adicionar subMeta");
+                SaveLayoutBinding saveLayoutBinding = SaveLayoutBinding.inflate(getLayoutInflater());
+                saveLayoutBinding.salvarBtn.setOnClickListener( saveView -> {
+
+                    SubMetaModel subMetaModel = new SubMetaModel();
+                    subMetaModel.setConcluido(false);
+                    subMetaModel.setTitulo(
+                            saveLayoutBinding.tituloEdt.getText().toString()
+
+                    );
+                    MetaModel metaClicada = lista.get(position);
+                    metaClicada.getLista().add(subMetaModel);
+                    dialog_subMeta.dismiss();
+                    saveLayoutBinding.tituloEdt.setText("");
+                    int atual_pos = 0;
+                    for (MetaModel meta : todaAlista){
+                        if ( meta.getTitulo().equals(metaClicada.getTitulo())){
+                            if( todaAlista.get(atual_pos).getTitulo().equals(metaClicada.getTitulo())){
+                                break;
+                            }
+                        }
+                        atual_pos++;
+                    }
+
+                    todaAlista.remove(atual_pos);
+                    todaAlista.add(metaClicada);
+
+
+                    salvarMetas();
+                    carregar_metas();
+
+                });
+                b.setView(saveLayoutBinding.getRoot());
+                dialog_subMeta = b.create();
+                dialog_subMeta.show();
+//                MetaModel metaClicada = lista.get(position);
+//                Intent i = new Intent(getApplicationContext(), SubMetasActivity.class);
+//                i.putExtra("idMeta", metaClicada.getId());
+//                i.putExtra("metaNome", metaClicada.getTitulo());
+//                startActivity(i);
             }
 
             @Override

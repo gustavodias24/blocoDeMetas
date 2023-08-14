@@ -1,10 +1,21 @@
 package benicio.soluces.blocodemetas.models;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MetaModel implements Serializable {
     String id, titulo, objetivo;
+    List<SubMetaModel> lista = new ArrayList<>();
     Boolean concluido;
+
+    public List<SubMetaModel> getLista() {
+        return lista;
+    }
+
+    public void setLista(List<SubMetaModel> lista) {
+        this.lista = lista;
+    }
 
     public Boolean getConcluido() {
         return concluido;
